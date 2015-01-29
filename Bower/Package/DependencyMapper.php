@@ -129,7 +129,7 @@ class DependencyMapper implements DependencyMapperInterface
 
     /**
      * @param string $name
-     * @param array $packageInfo
+     * @param array  $packageInfo
      *
      * @return \Sp\BowerBundle\Bower\Package\Package
      */
@@ -146,7 +146,7 @@ class DependencyMapper implements DependencyMapperInterface
     }
 
     /**
-     * @param array $packageInfo
+     * @param array  $packageInfo
      * @param string $type
      *
      * @return array
@@ -165,9 +165,9 @@ class DependencyMapper implements DependencyMapperInterface
     }
 
     /**
-     * @param string $canonicalDir
+     * @param string       $canonicalDir
      * @param string|array $files
-     * @param array $extensions
+     * @param array        $extensions
      *
      * @return array
      */
@@ -217,7 +217,7 @@ class DependencyMapper implements DependencyMapperInterface
 
     /**
      * @param Package $package
-     * @param array $packageInfo
+     * @param array   $packageInfo
      */
     private function resolveDependencies(Package $package, array $packageInfo)
     {
