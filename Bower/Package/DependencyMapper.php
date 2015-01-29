@@ -79,8 +79,46 @@ class DependencyMapper implements DependencyMapperInterface
      */
     public function map(array $packagesInfo, ConfigurationInterface $config)
     {
+        $packagesDependencyInfo = [];
+
+        $search = function ($packageInfo) use (&$packagesDependencyInfo, &$search) {
+            foreach ($packageInfo['dependencies'] as $name => $dependency) {
+                $search($dependency);
+                $packagesDependencyInfo[$name] = $dependency;
+            }
+        };
+
+        $search($packagesInfo);
+        $packagesDependencyInfo[$packagesInfo['endpoint']['name']] = $packagesInfo;
+
+        foreach ($packagesDependencyInfo as $name => $packageInfo) {
+            $this->mapPackage($packageInfo, $config);
+        }
+
+        return new ArrayCollection(array_reverse($this->packages->toArray()));
+    }
+
+    /**
+     * @see parent::map
+     *
+     * @param array $packagesInfo
+     * @param ConfigurationInterface $config
+     * @return ArrayCollection|\Doctrine\Common\Collections\Collection3
+     */
+    private function mapPackage(array $packagesInfo, ConfigurationInterface $config)
+    {
         $this->config = $config;
         $packagesInfo = $this->orderPackages($packagesInfo);
+
+        $packageName = $packagesInfo['endpoint']['name'];
+
+        if ($this->packages->contains($packageName)) {
+            return $this->packages;
+        }
+
+        $package = $this->createPackage($packageName, $packagesInfo);
+        $this->packages->set($packageName, $package);
+
         foreach ($packagesInfo[self::DEPENDENCIES_KEY] as $packageName => $packageInfo) {
             $package = $this->createPackage($packageName, $packageInfo);
             $this->packages->set($packageName, $package);
@@ -191,6 +229,8 @@ class DependencyMapper implements DependencyMapperInterface
             $dependencyPackage = $this->packages->get($dependencyName);
             if (null !== $dependencyPackage) {
                 $package->addDependency($dependencyPackage);
+            } else {
+                throw new \RuntimeException("Dependency {$dependencyName} not found.");
             }
         }
     }
