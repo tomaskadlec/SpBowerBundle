@@ -27,6 +27,11 @@ class DependencyMapper implements DependencyMapperInterface
     const DEPENDENCIES_KEY = 'dependencies';
 
     /**
+     * @var string KernelRootDir
+     */
+    private $kernelRootDir;
+
+    /**
      * @var array
      */
     private $requiredExtensions = array('js', 'css');
@@ -69,9 +74,17 @@ class DependencyMapper implements DependencyMapperInterface
      */
     private $packages;
 
-    public function __construct()
+    /**
+     * @param $kernelRootDir
+     */
+    public function __construct($kernelRootDir)
     {
         $this->packages = new ArrayCollection();
+        $this->kernelRootDir = $kernelRootDir;
+
+        if (empty($kernelRootDir)) {
+            throw new \RuntimeException('Kernel directory cannot be empty');
+        }
     }
 
     /**
@@ -173,6 +186,9 @@ class DependencyMapper implements DependencyMapperInterface
      */
     private function extractFiles($canonicalDir, $files, array $extensions)
     {
+        $appDir = realpath($this->kernelRootDir . '/../');
+        $canonicalDir = $appDir . '/' . $canonicalDir;
+
         if (!is_array($files)) {
             $files = array($files);
         }

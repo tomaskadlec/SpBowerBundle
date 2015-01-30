@@ -75,7 +75,7 @@ class Bower
     {
         $this->bowerPath = $bowerPath;
         $this->eventDispatcher = $eventDispatcher;
-        $this->dependencyMapper = $dependencyMapper ?: new DependencyMapper();
+        $this->dependencyMapper = $dependencyMapper ?: new DependencyMapper($kernelRootDir);
         $this->offline = $offline;
         $this->allowRoot = $allowRoot;
         $this->kernelRootDir = $kernelRootDir;
@@ -137,6 +137,19 @@ class Bower
         if (null === $mapping) {
             throw new InvalidMappingException('Bower returned an invalid dependency mapping. This mostly happens when the dependencies are not yet installed or if you are using an old version of bower.');
         }
+
+        $kernelDir = realpath($this->kernelRootDir . '/../');
+
+        $filterDir = function(&$mapping) use ($kernelDir, &$filterDir) {
+            $mapping['canonicalDir'] = str_replace($kernelDir, '', realpath($mapping['canonicalDir']));
+            if (isset($mapping['dependencies']) && !empty($mapping['dependencies'])) {
+                foreach ($mapping['dependencies'] as & $package) {
+                    $filterDir($package);
+                }
+            }
+        };
+
+        $filterDir($mapping);
 
         $cacheKey = $this->createCacheKey($config);
         $config->getCache()->save($cacheKey, $mapping);
