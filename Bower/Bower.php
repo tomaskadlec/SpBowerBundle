@@ -58,6 +58,11 @@ class Bower
     protected $allowRoot;
 
     /**
+     * @var string contains root dir of kernel
+     */
+    protected $kernelRootDir;
+
+    /**
      * @param string                                                      $bowerPath
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
      * @param Package\DependencyMapperInterface                           $dependencyMapper
@@ -65,13 +70,15 @@ class Bower
      * @param boolean                                                     $allowRoot
      */
     public function __construct($bowerPath = '/usr/bin/bower', EventDispatcherInterface $eventDispatcher,
-                                DependencyMapperInterface $dependencyMapper = null, $offline = false, $allowRoot = false)
+                                DependencyMapperInterface $dependencyMapper = null, $offline = false, $allowRoot = false,
+                                $kernelRootDir = '')
     {
         $this->bowerPath = $bowerPath;
         $this->eventDispatcher = $eventDispatcher;
         $this->dependencyMapper = $dependencyMapper ?: new DependencyMapper();
         $this->offline = $offline;
         $this->allowRoot = $allowRoot;
+        $this->kernelRootDir = $kernelRootDir;
     }
 
     /**
@@ -203,7 +210,12 @@ class Bower
      */
     private function createCacheKey(ConfigurationInterface $config)
     {
-        return hash("sha1", $config->getDirectory());
+        $directory = realpath($config->getDirectory());
+        $appDir    = realpath("{$this->kernelRootDir}/../");
+
+        $cacheDir  = str_replace($appDir, '', $directory);
+
+        return hash("sha1", $cacheDir);
     }
 
     /**

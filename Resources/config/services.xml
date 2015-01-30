@@ -49,6 +49,7 @@
             <argument>null</argument>
             <argument>%sp_bower.bower.offline%</argument>
             <argument>%sp_bower.bower.allow_root%</argument>
+            <argument>%kernel.root_dir%</argument>
         </service>
 
         <service id="sp_bower.bower_manager" class="%sp_bower.bower_manager.class%" />
