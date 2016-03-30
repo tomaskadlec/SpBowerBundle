@@ -1,5 +1,5 @@
 {
-    "name": "jonatlib/fork-sp-bower-bundle",
+    "name": "tomaskadlec/fork-sp-bower-bundle",
     "type": "symfony-bundle",
     "description": "Handle asset dependencies with bower",
     "keywords": ["asset", "dependencies", "bower manager", "bower"],
