@@ -43,7 +43,7 @@ class ScriptHandler
             return;
         }
 
-        static::executeCommand($event, $binDir, 'sp:bower:install', $options['process-timeout']);
+        static::executeCommand($event, $binDir, 'sp:bower:update', $options['process-timeout']);
     }
 
     /**
